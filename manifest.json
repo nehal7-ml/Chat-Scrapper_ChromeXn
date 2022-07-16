@@ -1,12 +1,12 @@
 {
     "name": "Chat Scraper",
-    "description": "Build an Extension!",
+    "description": "scrape data fromchat window",
     "version": "1.0",
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js"
       },
-    "permissions": ["storage", "activeTab", "scripting"],
+    "permissions": ["storage", "activeTab", "scripting","notifications"],
     "action": {
         "default_popup": "popup.html"
       }
