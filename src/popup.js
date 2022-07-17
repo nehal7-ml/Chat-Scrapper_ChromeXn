@@ -1,6 +1,6 @@
 let changeColor = document.getElementById("changeColor");
 let addKey = document.getElementById("addKey");
-
+let sendMail = document.getElementById("sendMail")
 
 // add error handling
 addKey.addEventListener("click", async () => {
@@ -31,17 +31,24 @@ changeColor.addEventListener("click", async () => {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: findElement,
+        func: scanChat,
     });
 });
 
 
+sendMail.addEventListener("click", async ()=> {
+
+
+
+});
 
 // input is a Set of key words
-async function findElement() {
+async function scanChat() {
 
 
     let chatPanel = document.querySelector("#chatContent");
+    let notify = true;
+
 
     chrome.storage.sync.get("addedListner", ({ addedListner }) => {
         if (addedListner) {
@@ -81,8 +88,8 @@ async function findElement() {
         });
 
     }
-    function notifyUser(msg) {
 
+    function notifyUser(msg) {
         chrome.runtime.sendMessage({ type: "found-match-notification", message: msg });
         console.log(msg)
     }
