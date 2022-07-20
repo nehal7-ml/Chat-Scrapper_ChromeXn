@@ -43,7 +43,7 @@ export class Email {
         this. to =to;
         this.subject =subject;
         this.body = body;
-        let trailer = "In-Reply-To\n" +"References:\n";
+        let trailer = "\nIn-Reply-To:\n" +"References:\n";
         this.string = "To:"+this.to+"\n"+ "subject:"+this. subject + "\n\n" + this.body + trailer;
    
     }

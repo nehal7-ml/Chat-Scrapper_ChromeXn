@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
-    console.log(request);
+    //console.log(request);
 
     if (request.type === "found-match-notification") {
         matched.push(request.message)
@@ -63,7 +63,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     await chrome.storage.sync.get("addedListner", ({ addedListner }) => {
 
-        console.log(changeInfo.url);
+        //console.log(changeInfo.url);
         if ((tabId === addedListner.tabId) && (changeInfo.url)) {
 
             addedListner = { tabId: null, flag: false };
@@ -109,7 +109,7 @@ async function sendEmail(message) {
             .then(response => {
                 console.log(response)
 
-                if (!EmailID.threadId === response.threadId) {
+                if (!(EmailID.threadId === response.threadId)) {
                     EmailID.threadId = response.threadId;
 
                     chrome.storage.sync.set({ EmailID });

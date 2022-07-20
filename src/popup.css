@@ -1,10 +1,25 @@
+body{
+  margin: 0px;
+  max-height: 350px;
+  height: 350px;
+  width:  300px;
+}
+
+.title{
+  background-image: linear-gradient(160deg,#3f657b, #163754 );
+  margin: 0px;
+  color: cornsilk;
+  padding: 5%;
+
+}
+
 .main {
   position: relative;
-  max-height: 300px;
-  height: fit-content;
+  max-height: 350px;
+  height: 350px;
   width:  300px;
   max-width: 300px;
-  background-image: repeating-linear-gradient(#015a84, #497386);
+  background-image: radial-gradient(#163754,#0e486a );
   color: whitesmoke;
   margin: 0;
 }
@@ -38,6 +53,7 @@ button {
                 0 0 0 4px black;
   background: url("../public/icons/add-icon.svg") no-repeat center center;
   cursor: pointer;
+  color: whitesmoke;
   padding: 0 0 0 0;
 }
 
@@ -53,10 +69,12 @@ button {
   flex-wrap: wrap;
   overflow-y: scroll;
   width:100%;
-  height: fit-content;
+  height: 150px;
   max-height: 150px;
-  background-image: linear-gradient(#264776, #0a217f) ;
+  background-image: radial-gradient(#558dad, #063572) ;
   margin: 5% 0;
+  align-content: flex-start;
+
  }
 .chip{
   position: relative; 
@@ -64,7 +82,6 @@ button {
   min-width: 50px;
   padding: 0 10px;
   height: 25px;
-  max-height: 10%;
   font-size: 10px;
   line-height: 100%;
   border-radius: 7.5px;
@@ -93,6 +110,7 @@ button {
   padding: 7px 0px;
   text-align: center;
   max-height: 100%;
+  overflow: hidden;
 }
 
 .TextInput{
@@ -100,6 +118,7 @@ button {
   height: 20px;
   border-radius: 10px;
   align-self: center;
+  
 }
 
 label{

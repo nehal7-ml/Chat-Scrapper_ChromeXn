@@ -30,20 +30,36 @@ chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
 
 chrome.storage.sync.get("EmailID", async ({ EmailID }) => {
     document.getElementById("EmailID").value = EmailID.sendTo;
-    if(!(EmailID.sendTo ==="")){
-        console.log(EmailID.sendTo)        
-        if(emailVerify(EmailID.sendTo)){
+    if (!(EmailID.sendTo === "")) {
+        console.log(EmailID.sendTo)
+        if (emailVerify(EmailID.sendTo)) {
             console.log("matched");
-            emailTick.style.display="inline";
-       }
+            emailTick.style.display = "inline";
+        }
     }
 });
 
 addEmail.addEventListener("click", () => {
     let EmailID = { sendTo: "", threadId: "" };
     EmailID.sendTo = document.getElementById("EmailID").value;
-    chrome.storage.sync.set({ EmailID });
 
+    if (!(EmailID.sendTo === "")) {
+
+        if (emailVerify(EmailID.sendTo)) {
+            console.log("matched");
+            emailTick.style.display = "inline";
+            document.getElementById("EmailID").style.border = "1px solid black";
+        }
+
+        else {
+            console.log("no email")
+            document.getElementById("EmailID").style.border = "2px solid red";
+            emailTick.style.display = "none";
+        }
+    }
+
+
+    chrome.storage.sync.set({ EmailID });
 });
 
 
