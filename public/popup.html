@@ -6,14 +6,23 @@
 </head>
 
 <body>
-  <div class="keyWordsContainer">
-    <label for="keyWords  ">Key Words:</label>
-    <input type="text" id="keyWords" name="keyWords">
-    <button id="addKey"></button>
+  <div class="main">
+    <div class="InputContainer" id="AddKeyWordsContainer">
+      <label for="keyWords">Key Words:</label>
+      <input type="text" class="TextInput" id="keyWords" name="keyWords">
+      <button class="add" id="addKey">+</button>
+    </div>
+    Searching For:
+    <div id="KeyWordsContainer"></div>
+    <div class="InputContainer" id="AddEmailContainer">
+      <label for="keyWords">Email:</label>
+      <input type="text" class="TextInput" id="EmailID" name="keyWords">
+      <button class="add" id="addEmail">+</button>
+      <span id="emailobtained" style="align-self:center;display: none;">&#10004</span>
+    </div>
+    <button class="scan" id="scan" disabled="true" >scan</button>
+    <script src="popup.js"></script>
   </div>
-  <button id="sendMail">send</button>
-  <button id="changeColor">scan</button>
-  <script src="popup.js"></script>
 </body>
 
 </html>

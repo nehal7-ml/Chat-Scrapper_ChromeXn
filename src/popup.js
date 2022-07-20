@@ -1,20 +1,68 @@
-let changeColor = document.getElementById("changeColor");
+import "./popup.css"
+import wcmatch from "wildcard-match"
+const isMatch = wcmatch("https://ptrdev1.t3live.com/*/app/dashboardAlt");
+const emailVerify = wcmatch("*@*.*");
+let scan = document.getElementById("scan");
 let addKey = document.getElementById("addKey");
-let sendMail = document.getElementById("sendMail")
+//let sendMail = document.getElementById("sendMail")
+let addEmail = document.getElementById("addEmail");
+let emailTick = document.getElementById("emailobtained");
+let deleteArray = [];
+
+
+
+chrome.storage.sync.get("addedListner", async ({ addedListner }) => {
+
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!addedListner.flag && isMatch(tab.url)) {
+        console.log("matched")
+        scan.disabled = false;
+    }
+
+});
+
+
+chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
+    for (let i = 0; i < keyWords.length; i++) {
+        addchip(keyWords[i]);
+    }
+});
+
+chrome.storage.sync.get("EmailID", async ({ EmailID }) => {
+    document.getElementById("EmailID").value = EmailID.sendTo;
+    if(!(EmailID.sendTo ==="")){
+        console.log(EmailID.sendTo)        
+        if(emailVerify(EmailID.sendTo)){
+            console.log("matched");
+            emailTick.style.display="inline";
+       }
+    }
+});
+
+addEmail.addEventListener("click", () => {
+    let EmailID = { sendTo: "", threadId: "" };
+    EmailID.sendTo = document.getElementById("EmailID").value;
+    chrome.storage.sync.set({ EmailID });
+
+});
+
+
 
 // add error handling
 addKey.addEventListener("click", async () => {
-    let new_words = document.getElementById("keyWords");
-    if (new_words.value) {
+    let new_word = document.getElementById("keyWords").value.toUpperCase();
+    if (new_word) {
 
         // convert to uppercase then split
-        let new_list = new_words.value.toUpperCase().split(/\s/)
-        chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
-            console.log(keyWords)
-            let array = keyWords;
-            keyWords = Array.from(new Set([...array, ...new_list]));
-            await chrome.storage.sync.set({ keyWords });
-
+        addchip(new_word);
+        //let new_del = document.getElementById(`delete-${new_word}`);
+        //new_del.addEventListener("click",deleteChip);
+        chrome.storage.sync.get("keyWords", ({ keyWords }) => {
+            if (new_word[0] === '$' || new_word[0] === '@') {
+                keyWords.push(new_word.slice(1));
+            }
+            keyWords.push(new_word)
+            chrome.storage.sync.set({ keyWords });
         });
     }
     else {
@@ -22,56 +70,97 @@ addKey.addEventListener("click", async () => {
             console.log(keyWords)
         });
     }
-    new_words.value = '';
+    document.getElementById("keyWords").value = '';
 
 });
 
+// function to add keyword chips : add event listner to each button to remove
+// word from list of keywords
 
-changeColor.addEventListener("click", async () => {
+function addchip(new_word) {
+
+    const div = document.getElementById("KeyWordsContainer");
+    const chip = createChip(new_word);
+
+    div.appendChild(chip);
+    document.getElementById("delete-" + new_word).addEventListener("click", deleteChip);
+}
+
+
+function createChip(word) {
+    const chip = document.createElement("div");
+
+    // create chip
+    chip.className = "chip";
+    chip.id = `chip-${word}`;
+    chip.innerHTML = `<div class="chipText">${word}</div>\
+    <button class="delete" id="delete-${word}">x</button></div>`;
+    return chip;
+}
+
+function deleteChip(event) {
+    const toremove = event.target.parentElement.outerText.split("\n")[0];
+
+    chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
+        console.log(keyWords);
+        console.log(toremove);
+        const index = keyWords.indexOf(toremove);
+        if (index > -1) { // only splice array when item is found
+            keyWords.splice(index, 1); // 2nd parameter means remove one item only
+        }
+        chrome.storage.sync.set({ keyWords });
+    });
+    event.target.parentElement.remove();
+}
+
+scan.addEventListener("click", async () => {
+
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: scanChat,
     });
+
+    let addedListner = { tabId: tab.id, flag: true }
+    chrome.storage.sync.set({ addedListner });
+    scan.disabled = true;
 });
 
+/**
+ *
+ sendMail.addEventListener("click", async () => {
+    chrome.runtime.sendMessage({ type: "send-Email", message: "new DRAFT **" });
+ 
+   });
 
-sendMail.addEventListener("click", async ()=> {
+ * 
+ */
 
-
-
-});
-
-// input is a Set of key words
+/////////////////////////////////////////move to content scripts///////////////////////////
 async function scanChat() {
 
-
     let chatPanel = document.querySelector("#chatContent");
-    let notify = true;
 
+    chatPanel.addEventListener('DOMNodeInserted', checkNewMessage);
+    console.log("adding listner");
 
-    chrome.storage.sync.get("addedListner", ({ addedListner }) => {
-        if (addedListner) {
-            chatPanel.removeEventListener("DOMNodeInserted", checkNewMessage, true);
-            console.log("removing old listner")
-        }
-
-        chatPanel.addEventListener('DOMNodeInserted', checkNewMessage, true);
-
-        chrome.storage.sync.set({ addedListner: true });
-        console.log("adding listner")
-    });
-
-
+    if (chatPanel) { };
 
     async function checkNewMessage(event) {
 
-        await chrome.storage.sync.get("keyWords", ({ keyWords }) => {
+        chrome.storage.sync.get("keyWords", ({ keyWords }) => {
             // console.log(keyWords);
+
+            ///message parts sticking
 
             if (event.target.parentNode.id === "chatContent") {
                 console.log("new msg in chat")
-                let new_msg = event.target.innerText.toUpperCase();
+                let target = event.target;
+                let time = target.querySelector(".chat-img.inline").innerText
+                let msg = target.querySelector(".chat-msg.chat-msg-txt.inline.smChatBody");
+                let user = target.querySelector("strong");
+                let new_msg = user.innerText.toUpperCase() + " " + msg.innerText.toUpperCase();
                 let words_in_msg = new Set(new_msg.split(/\s/));
                 //check if each keyword is present in new msg
                 // should be decoupled for cleaner code
@@ -79,7 +168,7 @@ async function scanChat() {
                 for (let i = 0; i < keyWords.length; i++) {
                     if (words_in_msg.has(keyWords[i])) {
                         // console.log(new_msg);   
-                        notifyUser(new_msg);
+                        notifyUser(time + " " + new_msg);
                         break;
                     }
 
@@ -98,11 +187,6 @@ async function scanChat() {
 }
 
 
-// The body of this function will be executed as a content script inside the
-// current page
-function setPageBackgroundColor(text) {
-    chrome.storage.sync.get("color", ({ color }) => {
-        document.body.style.backgroundColor = color;
-    });
-    console.log(text);
-}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

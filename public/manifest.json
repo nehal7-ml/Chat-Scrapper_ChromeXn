@@ -16,16 +16,21 @@
     "default_title": "T3 Chatfilter",
     "default_popup": "popup.html"
   },
-  "permissions": ["storage", "activeTab", "scripting","notifications"],
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "run_at": "document_idle",
-      "js": [
-        "contentScript.js"
-      ]
-    }
-  ]
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications",
+    "identity"
+  ],
+  "host_permissions": [
+    "*://*/*"
+],
+  "oauth2": {
+    "client_id": "<client-id>",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/gmail.compose"
+    ]
+  }
 }

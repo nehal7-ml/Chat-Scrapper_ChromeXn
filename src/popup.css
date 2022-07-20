@@ -1,25 +1,108 @@
+.main {
+  position: relative;
+  max-height: 300px;
+  height: fit-content;
+  width:  300px;
+  max-width: 300px;
+  background-image: repeating-linear-gradient(#015a84, #497386);
+  color: whitesmoke;
+  margin: 0;
+}
 button {
-    height: 30px;
-    width: 30px;
     outline: none;
-    margin: 10px;
-    border: none;
-    border-radius: 2px;
+    margin: 5%;
+    border: 1px solid #000000;
+    cursor: pointer;
+    
   }
   
   button.current {
     box-shadow: 0 0 0 2px white,
                 0 0 0 4px black;
   }
+  button:active{
+    opacity: 50%;
+  }
 
-#addKey {
+.scan {
+  position: relative;
+  width: 90%;
+  height: 30px;
+  padding: 2px 2px;
+  border-radius: 15px;
+}
+.add {
   height: 15px;
   width: 15px;
   box-shadow: 0 0 0 2px white,
                 0 0 0 4px black;
-  background: transparent url("./add-icon.svg") no-repeat center center;
+  background: url("../public/icons/add-icon.svg") no-repeat center center;
+  cursor: pointer;
+  padding: 0 0 0 0;
 }
-.keyWordsContainer {
-  display: flex;
 
+.InputContainer {
+  position: relative;
+  display: flex;
+  margin: 1%;
+
+}
+#KeyWordsContainer {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  width:100%;
+  height: fit-content;
+  max-height: 150px;
+  background-image: linear-gradient(#264776, #0a217f) ;
+  margin: 5% 0;
+ }
+.chip{
+  position: relative; 
+  display: inline-flex;
+  min-width: 50px;
+  padding: 0 10px;
+  height: 25px;
+  max-height: 10%;
+  font-size: 10px;
+  line-height: 100%;
+  border-radius: 7.5px;
+  background-image: linear-gradient(#cccbcb, #828281);
+  border: 1px solid #000000;
+  align-content: flex-start;
+  color: rgb(9, 6, 53);
+  
+}
+.delete {
+  position: relative;
+  height: 15px;
+  width: 15px;
+  padding: 0 0 2px 0;
+  border-radius: 50%;
+  background-image: linear-gradient(#828281,#cccbcb);
+  opacity: 75%;
+  margin: 5px;
+  font-size: 100%;
+}
+.delete:hover{
+  background-image: linear-gradient(#515151,#4d4747);
+}
+.chipText {
+  position: relative;
+  padding: 7px 0px;
+  text-align: center;
+  max-height: 100%;
+}
+
+.TextInput{
+  position: relative;
+  height: 20px;
+  border-radius: 10px;
+  align-self: center;
+}
+
+label{
+  align-self: center;
+  margin: 0 2px;
 }
