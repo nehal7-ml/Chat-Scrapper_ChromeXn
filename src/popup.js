@@ -90,44 +90,6 @@ addKey.addEventListener("click", async () => {
 
 });
 
-// function to add keyword chips : add event listner to each button to remove
-// word from list of keywords
-
-function addchip(new_word) {
-
-    const div = document.getElementById("KeyWordsContainer");
-    const chip = createChip(new_word);
-
-    div.appendChild(chip);
-    document.getElementById("delete-" + new_word).addEventListener("click", deleteChip);
-}
-
-
-function createChip(word) {
-    const chip = document.createElement("div");
-
-    // create chip
-    chip.className = "chip";
-    chip.id = `chip-${word}`;
-    chip.innerHTML = `<div class="chipText">${word}</div>\
-    <button class="delete" id="delete-${word}">x</button></div>`;
-    return chip;
-}
-
-function deleteChip(event) {
-    const toremove = event.target.parentElement.outerText.split("\n")[0];
-
-    chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
-        console.log(keyWords);
-        console.log(toremove);
-        const index = keyWords.indexOf(toremove);
-        if (index > -1) { // only splice array when item is found
-            keyWords.splice(index, 1); // 2nd parameter means remove one item only
-        }
-        chrome.storage.sync.set({ keyWords });
-    });
-    event.target.parentElement.remove();
-}
 
 scan.addEventListener("click", async () => {
 
@@ -143,6 +105,48 @@ scan.addEventListener("click", async () => {
     scan.disabled = true;
 });
 
+
+// function to add keyword chips : add event listner to each button to remove
+// word from list of keywords
+
+function addchip(new_word) {
+
+    const div = document.getElementById("KeyWordsContainer");
+    const chip = createChip(new_word);
+    div.appendChild(chip);
+    document.getElementById("delete-" + new_word).addEventListener("click", deleteChip);
+}
+
+
+function createChip(word) {
+    const chip = document.createElement("div");
+    // create chip
+    chip.className = "chip";
+    chip.id = `chip-${word}`;
+    chip.innerHTML = `<div class="chipText">${word}</div>\
+    <button class="delete" id="delete-${word}">x</button></div>`;
+    return chip;
+}
+
+
+/// pass event from delete button on chip
+function deleteChip(event) {
+    const toremove = event.target.parentElement.outerText.split("\n")[0];
+
+    chrome.storage.sync.get("keyWords", async ({ keyWords }) => {
+        //console.log(keyWords);
+        //console.log(toremove);
+        const index = keyWords.indexOf(toremove);
+        if (index > -1) { // only splice array when item is found
+            keyWords.splice(index, 1); // 2nd parameter means remove one item only
+        }
+        chrome.storage.sync.set({ keyWords });
+    });
+    event.target.parentElement.remove();
+}
+
+
+
 /**
  *
  sendMail.addEventListener("click", async () => {
@@ -153,7 +157,7 @@ scan.addEventListener("click", async () => {
  * 
  */
 
-/////////////////////////////////////////move to content scripts///////////////////////////
+////////////////////////////////////////script injected to the page for scanning///////////////////////////
 async function scanChat() {
 
     let chatPanel = document.querySelector("#chatContent");
@@ -162,6 +166,7 @@ async function scanChat() {
     console.log("adding listner");
 
     if (chatPanel) { };
+    notifyUser("new message" );
 
     async function checkNewMessage(event) {
 
@@ -169,6 +174,8 @@ async function scanChat() {
             // console.log(keyWords);
 
             ///message parts sticking
+            try{
+               
 
             if (event.target.parentNode.id === "chatContent") {
                 console.log("new msg in chat")
@@ -190,6 +197,12 @@ async function scanChat() {
 
                 }
             };
+
+        } catch(err){
+
+            console.log("Unhandled err  on scanner content: ");
+            console.log(err);
+        }
         });
 
     }

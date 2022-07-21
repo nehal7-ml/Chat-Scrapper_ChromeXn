@@ -44,7 +44,7 @@ export class Email {
         this.subject =subject;
         this.body = body;
         let trailer = "\nIn-Reply-To:\n" +"References:\n";
-        this.string = "To:"+this.to+"\n"+ "subject:"+this. subject + "\n\n" + this.body + trailer;
+        this.string = "To:"+this.to+"\n"+ "subject:"+this. subject + trailer+ "\n\n" + this.body ;
    
     }
        
