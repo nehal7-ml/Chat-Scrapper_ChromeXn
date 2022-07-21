@@ -166,8 +166,6 @@ async function scanChat() {
     console.log("adding listner");
 
     if (chatPanel) { };
-    notifyUser("new message" );
-
     async function checkNewMessage(event) {
 
         chrome.storage.sync.get("keyWords", ({ keyWords }) => {
