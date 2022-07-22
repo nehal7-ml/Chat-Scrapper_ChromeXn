@@ -181,8 +181,8 @@ async function scanChat() {
                 let time = target.querySelector(".chat-img.inline").innerText
                 let msg = target.querySelector(".chat-msg.chat-msg-txt.inline.smChatBody");
                 let user = target.querySelector("strong");
-                let new_msg = user.innerText.toUpperCase() + " " + msg.innerText.toUpperCase();
-                let words_in_msg = new Set(new_msg.split(/\s/));
+                let new_msg = user.innerText + " " + msg.innerText;
+                let words_in_msg = new Set(new_msg.toUpperCase().split(/\s/));
                 //check if each keyword is present in new msg
                 // should be decoupled for cleaner code
 

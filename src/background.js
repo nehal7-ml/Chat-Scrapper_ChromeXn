@@ -1,28 +1,33 @@
 
 import { Email, delay } from "./utilScript"
-//import "./Gapi"
+
+
+///////////////////hard code keywords here////////////////////////////////
+const MainInputs = { 
+    keyWords: [], 
+    EmailID: "" 
+};
+////////////////////check input.json for reference////////////////////////
+
+
+
+let EmailID = { sendTo: MainInputs.EmailID, threadId: "" };
+let keyWords = parseInput(MainInputs.keyWords);
+
 let color = '#000000';
 let addedListner = { tabId: null, flag: false };
-let keyWords = [];
 let img_url = "./icons/outline_priority_high_black_24dp.png"
 let matched = [];
 let NotifyTab = { created: false, tab: null };
 let newMatched = false;
-let EmailID = { sendTo: "", threadId: "" };
-//console.log(gapi.client);
+
+
 
 
 //////////////////////////////////////////////////////////////listners/////////////////////////////////////////////////
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.storage.sync.set({ color, addedListner, keyWords, matched, NotifyTab, EmailID });
-    chrome.identity.getAuthToken(
-        { 'interactive': true },
-        function (token) {
-            //load Google's javascript client libraries
-            const Oauthtoken = token;
-            chrome.storage.sync.set({ Oauthtoken });
-        }
-    );
+    refreshAuth();
 });
 
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
@@ -34,7 +39,19 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
             newMatched = true;
             await delay(5000); /// change this
             let emailmsg = matched; // new variable for async.
-            sendEmail(emailmsg);
+
+            ////check number of lines in email must not exceed 76 split if required.///
+            if (emailmsg.length > 70) {
+
+                const chunkSize = 70;
+                for (let i = 0; i < emailmsg.length; i += chunkSize) {
+                    const chunk = emailmsg.slice(i, i + chunkSize);
+                    console.log(chunkSize)
+                    await sendEmail(chunk)
+
+                }
+            }
+            else sendEmail(emailmsg);
             newNotification(matched);
         }
     }
@@ -48,7 +65,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
         });
     }
-  
+
     sendResponse();
 
 });
@@ -76,6 +93,8 @@ function newNotification() {
 }
 
 async function sendEmail(message) {
+    await checkAuth();
+
     chrome.storage.sync.get(["Oauthtoken", "EmailID"], async ({ Oauthtoken, EmailID }) => {
 
         ////let today = new Date().toLocaleDateString();
@@ -88,10 +107,12 @@ async function sendEmail(message) {
             "Authorization": `Bearer ${Oauthtoken}`,
             "Accept-Encoding": "gzip, deflate, br"
         }
-        let threadId = EmailID.threadId;
+        //let threadId = EmailID.threadId;
+
+        console.log(Oauthtoken)
 
         const baseURL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
-        const body = JSON.stringify({ threadId, raw });
+        const body = JSON.stringify({ raw });
 
         fetch(baseURL, {
             method: "POST",
@@ -105,11 +126,13 @@ async function sendEmail(message) {
             })
             .catch(error => {
                 console.log('Error:', error)
-                return
+                return;
             });
 
 
     });
+
+
 }
 
 function openTab() {
@@ -135,7 +158,7 @@ function openTab() {
                 console.log("no error required tab is open")
                 newMatched = false;
                 matched = [];
-                
+
             }
             catch (err) {
                 console.log("Unhandled err: ");
@@ -143,10 +166,10 @@ function openTab() {
                 NotifyTab = { created: false, tab: null };
                 chrome.storage.sync.set({ NotifyTab });
                 ////old tab propbably closed open another////
-                await openTab();        
+                await openTab();
 
             }
-            finally{
+            finally {
                 return;
             }
         }
@@ -154,3 +177,58 @@ function openTab() {
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function refreshAuth() {
+    chrome.identity.getAuthToken(
+        { 'interactive': true },
+        function (token) {
+            //load Google's javascript client libraries
+            console.log("refreshed token");
+            const Oauthtoken = token;
+            chrome.storage.sync.set({ Oauthtoken });
+        }
+    );
+    return true;
+}
+
+async function checkAuth() {
+
+    chrome.storage.sync.get("Oauthtoken", ({ Oauthtoken }) => {
+        const baseURL = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${Oauthtoken}`;
+
+        fetch(baseURL, { method: "GET" })
+            .then(async response => {
+                console.log(response)
+
+                if (!(response.status === 200)) {
+                    await refreshAuth();
+                }
+                return true;
+            })
+            .catch(error => {
+                console.log('Error:', error)
+                return false;
+            });
+
+    });
+
+
+}
+
+
+//////////////////////function related to input////////////////////////////////////
+
+function parseInput(keyWords) {
+
+    let result = [];
+
+    keyWords.forEach(word => {
+        result.push(word.toUpperCase());
+
+        if ((word[0] === "$") || (word[0] === "@")) {
+            result.push(word.slice(1).toUpperCase());
+        }
+    });
+    return result;
+
+}

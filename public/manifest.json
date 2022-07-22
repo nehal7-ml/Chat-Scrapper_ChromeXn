@@ -16,6 +16,7 @@
     "default_title": "T3 Chatfilter",
     "default_popup": "popup.html"
   },
+  "key": "ehknpgkjofiachcmlpcjkdkbkegjfefi",
   "permissions": [
     "storage",
     "activeTab",

@@ -43,9 +43,7 @@ export class Email {
         this. to =to;
         this.subject =subject;
         this.body = body;
-        let trailer = "\nIn-Reply-To:\n" +"References:\n";
-        this.string = "To:"+this.to+"\n"+ "subject:"+this. subject + trailer+ "\n\n" + this.body ;
-   
+        this.string = "To:"+this.to+"\n"+ "subject:"+this. subject + "\n\n" + this.body ;   
     }
        
     get rawString () {          
@@ -69,3 +67,5 @@ export class Email {
 }
 
 export const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
